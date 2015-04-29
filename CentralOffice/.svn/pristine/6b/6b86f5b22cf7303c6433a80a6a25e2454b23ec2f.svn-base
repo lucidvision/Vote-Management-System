@@ -1,0 +1,263 @@
+package ManageRepository;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class RepositoryManagement {
+	  private Connection con = null;
+	  private Statement stat = null;
+	  private ResultSet rs = null;
+	  private String RideRep;
+	  
+	  public RepositoryManagement(String RepFile){
+	      try{
+			  Class.forName("org.sqlite.JDBC");
+			  try{
+			      RideRep = RepFile;
+			      boolean ULExists = new File(RideRep).exists();
+			      if(ULExists){
+			      con = DriverManager.getConnection("jdbc:sqlite:/" + RideRep);
+			      stat = con.createStatement();
+			      con.close();
+			      stat = null;
+			      } else {
+			    	  System.out.println("Error: Riding Repository could not be found.\n"
+			    			  + "RepositoryManager can not be created.\n" +
+			    			  "Save Repository database to " + RideRep + " and run program again.");
+			      }
+			  } catch (SQLException e){
+			    e.printStackTrace();
+			    System.out.println(e.getMessage());
+			  }
+	      } catch(ClassNotFoundException e){
+	    	  System.out.println("SQLite Driver not found.");
+	      }
+	  }
+	  
+	  private void connect(){
+		  try{
+			  con = DriverManager.getConnection("jdbc:sqlite:" + RideRep);
+			  stat = con.createStatement();
+		  } catch (SQLException e){
+			    e.printStackTrace();
+			    System.out.println(e.getMessage());
+		  }
+	  }
+	  
+	  private void closeCon(){
+		  try{
+			  con.close();
+			  stat = null;
+			  rs = null;
+		  } catch (SQLException e){
+			    e.printStackTrace();
+			    System.out.println(e.getMessage());
+		  }
+	  }
+	  
+	  
+	   public riding getRiding(String rideName){
+		   connect();
+		   try{
+			   rs = stat.executeQuery("Select * FROM ridings WHERE riding_name = '" + rideName + "'");
+			   riding ride = new riding();
+			   ride.setRidingName(rs.getString("riding_name"));
+			   ride.setDate(rs.getString("date_created"));
+			   ride.setNumVote(rs.getInt("number_of_voters"));
+			   ride.setNumCandi(rs.getInt("number_of_candidates"));
+			   ride.setNumIncum(rs.getInt("number_of_incumbents"));
+			   ride.setMap(rs.getString("map"));
+			   ride.setNumPolls(rs.getInt("number_of_polls"));
+			   ride.setNumSeats(rs.getInt("number_of_seats"));
+			   
+			   int c = ride.getNumCandi();
+			   String[] name = new String[c];
+			   String[] party = new String[c];
+			   rs = stat.executeQuery("Select * FROM candidates WHERE riding_name = '" + rideName + "'");
+			   rs.next();
+			   for(int i = 0;i < c;i++){
+				   name[i] = rs.getString("name");
+				   party[i] = rs.getString("party");
+				   rs.next();
+			   }
+			   ride.setCandiName(name);
+			   ride.setCandiAff(party);
+			   
+			   c = ride.getNumIncum();
+			   name = new String[c];
+			   party = new String[c];
+			   rs = stat.executeQuery("Select * FROM incumbents WHERE riding_name = '" + rideName + "'");
+			   rs.next();
+			   for(int i = 0;i <c;i++){
+				   name[i] = rs.getString("name");
+				   party[i] = rs.getString("party");
+				   rs.next();
+			   }
+			   ride.setIncumAff(name);
+			   ride.setIncumAff(party);
+			   
+			   c = ride.getNumPolls();
+			   int[] polls = new int[c];
+			   rs = stat.executeQuery("Select * FROM polls WHERE riding_name = '" + rideName + "'");
+			   rs.next();
+			   for(int i = 0;i < ride.getNumPolls();i++){
+				   polls[i] = rs.getInt("poll_num");
+				   rs.next();
+			   }
+			   ride.setPolls(polls);
+			   closeCon();
+			   return ride;
+		   }
+		   catch(SQLException e){
+			   e.printStackTrace();
+			   System.out.println(e.getMessage());
+		   }
+		   return null;
+	   }
+	   
+	   public void saveNewRiding(riding ride){
+		   connect();
+		   try{
+			   String query = "INSERT INTO ridings(riding_name,date_created,number_of_voters,number_of_candidates,number_of_incumbents,map,number_of_polls,number_of_seats) VALUES('" +
+					   ride.getRidingName() + "', '" +
+					   ride.getDateCr() + "', '" +
+					   ride.getNumVote() + "', '" +
+					   ride.getNumCandi() + "', '" +
+					   ride.getNumIncum() + "', '" +
+					   ride.getMap() + "', '" +
+					   ride.getNumPolls() + "', '" +
+					   ride.getNumSeats() + "')";
+			   stat.execute( query );
+			   for(int i = 0;i < ride.getNumCandi();i++){
+				   query = "INSERT INTO candidates(riding_name,name,party) VALUES('" + ride.getRidingName() + "','" + ride.getCandiName()[i] + "','" + ride.getCandiAff()[i] + "')";
+				   stat.execute( query );
+			   }
+			   for(int i = 0; i < ride.getNumIncum();i++){
+				   query = "INSERT INTO incumbents(riding_name,name,party) VALUES('" + ride.getRidingName() + "','" + ride.getIncumbets()[i] + "','" + ride.getIncumbAff()[i] + "')";
+				   stat.execute( query );
+			   }
+			   for(int i = 0; i < ride.getNumPolls();i++){
+				   query = "INSERT INTO polls(riding_name,poll_num) VALUES('" + ride.getRidingName() + "','" + ride.getPolls()[i] + "')";
+				   stat.execute( query );
+			   }
+		   }catch(SQLException e){
+			   e.printStackTrace();
+			   System.out.println(e.getMessage());
+		   }	   		   
+	   }
+	   
+	   public void updateRiding(riding ride, String oldname){
+		   connect();
+		   try{
+			   String query = "UPDATE ridings SET " +
+					   "riding_name = '" + ride.getRidingName() + "'," +
+					   "date_created = '" + ride.getDateCr() + "'," +
+					   "number_of_voters= '" + ride.getNumVote() + "'," +
+					   "number_of_candidates='" + ride.getNumCandi() + "'," +
+					   "number_of_incumbents='" + ride.getNumIncum() + "'," +
+					   "map ='" + ride.getMap() + "'," +
+					   "number_of_polls ='" + ride.getNumPolls() + "'," +
+					   "number_of_seats ='" + ride.getNumSeats() + "' WHERE riding_name = '" + oldname + "'";
+			   stat.execute( query );
+			   stat.execute("DELETE from candidates WHERE riding_name = '" + oldname + "'");
+			   stat.execute("DELETE from incumbents WHERE riding_name = '" + oldname + "'");
+			   stat.execute("DELETE from polls WHERE riding_name = '" + oldname + "'");
+			   for(int i = 0;i < ride.getNumCandi();i++){
+				   query = "INSERT INTO candidates(riding_name,name,party) VALUES('" + ride.getRidingName() + "','" + ride.getCandiName()[i] + "','" + ride.getCandiAff()[i] + "')";
+				   stat.execute( query );
+			   }
+			   for(int i = 0; i < ride.getNumIncum();i++){
+				   query = "INSERT INTO incumbents(riding_name,name,party) VALUES('" + ride.getRidingName() + "','" + ride.getIncumbets()[i] + "','" + ride.getIncumbAff()[i] + "')";
+				   stat.execute( query );
+			   }
+			   for(int i = 0; i < ride.getNumPolls();i++){
+				   query = "INSERT INTO polls(riding_name,poll_num) VALUES('" + ride.getRidingName() + "','" + ride.getPolls()[i] + "')";
+				   stat.execute( query );
+			   }
+		   }catch(SQLException e){
+			   e.printStackTrace();
+			   System.out.println(e.getMessage());
+		   }	   		   
+	   }
+	   
+	   public String[] getRidingList(){
+		   connect();
+		   String[] ridings;
+		   try{
+			   rs = stat.executeQuery("SELECT COUNT(riding_name) FROM ridings");
+			   ridings = new String[rs.getInt(1)];
+			   rs = stat.executeQuery("SELECT riding_name FROM ridings");
+			   rs .next();
+			   for(int i = 0;i < ridings.length;i++){
+				   ridings[i] = rs.getString("riding_name");
+				   rs.next();
+				}
+			   closeCon();
+		   } catch(SQLException e){
+			   e.printStackTrace();
+			   System.out.println();
+			   ridings = null;
+		   }
+		   return ridings;
+	   }
+	   
+	   public void commitResults(String ridename, String resultsfile){
+		   if( new File(resultsfile).exists() ){
+			   try {
+				   Connection rcon = DriverManager.getConnection("jdbc:sqlite:" + resultsfile);
+				   Statement rstat = rcon.createStatement();
+				   connect();
+				   ResultSet rrs = rstat.executeQuery("SELECT * FROM polls");
+				   while(!rrs.isAfterLast()){
+					   int poll_num = rrs.getInt("poll_num");
+					   int recount = rrs.getInt("recounts");
+					   int poll_counted = rrs.getInt("poll_counted");
+					   stat.execute("UPDATE polls SET recounts = '" + recount + "',poll_counted ='"+poll_counted + "' WHERE poll_num = '" + poll_num + "' AND '" + ridename + "'");
+					   if(recount == poll_counted){
+						   rs = rstat.executeQuery("SELECT * FROM ballots WHERE poll_num = '" + poll_num + "' AND '" + ridename + "'");
+						   stat.execute("DELETE FROM ballots WHERE poll_num = '" + poll_num + "' AND reount ='" + recount + "' AND '" + ridename + "'");
+						   rs.next();
+						   while(!rs.isAfterLast()){
+							   stat.execute("INSERT INTO ballots(riding_name, ballotId,recount,spoiled,candidate_name,rank) VALUES ('" +
+									   ridename + "', " +
+									   rs.getInt("ballotId") + "', '" + 
+									   rs.getInt("recount") + "', '" + 
+									   rs.getBoolean("spoiled") + "', '" + 
+									   rs.getInt("candidae_name") + "', '" + 
+									   rs.getInt("rank") + "')");
+							   rs.next();
+						   }
+					   }
+					   rrs.next();
+				   }
+				   rrs = rstat.executeQuery("SELECT * FROM results");
+				   stat.execute("DELETE FROM results WHERE riding_name = '" + ridename + "'");
+				   rrs.next();
+				   while(!rrs.isAfterLast()){
+					   stat.execute("INSERT INTO results(riding_name, candidate_name, elected, eliminated, first_choice, transferred_eliminated, transferred_elected) VALUES('"+
+							   ridename + "', '" +
+							   rrs.getString("candidate_name") + "', '" +
+							   rrs.getBoolean("elected") + "', '" +
+							   rrs.getBoolean("eliminated") + "', '" +
+							   rrs.getInt("First_Choice") + "', '" +
+							   rrs.getInt("transferred_eliminated") + "', '" +
+							   rrs.getInt("transferred_elected") + "')");
+					   rrs.next();
+				   }
+				   rcon.close();
+				   rstat = null;
+				   new File(resultsfile).delete();
+				   closeCon();
+			   } catch(SQLException e ){
+				   e.printStackTrace();
+				   System.out.println(e.getMessage());
+			   }
+		   }
+		   
+		   
+	   }
+}
+

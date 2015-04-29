@@ -1,0 +1,33 @@
+import GUI.*;
+import ManageRepository.RepositoryManagement;
+import ManageUsers.UserManagement;
+
+
+
+class CentralOffice {
+	  public static void main(String[] args) {
+		    UserManagement UserManager = null;
+		    String UserList = "UserList.sqlite";
+		    RepositoryManagement RepManager = null;
+		    String RidingRep = "RidingRep.sqlite";
+		    
+		    
+		    try {
+		      UserManager = new UserManagement(UserList);
+		      RepManager = new RepositoryManagement(RidingRep);
+		      LoginWindow lw = new LoginWindow(UserManager);
+
+		      } catch (Exception e) {
+		          e.printStackTrace();
+		      }
+		     
+		    
+		    
+		    
+		    
+		   
+		    
+	  }
+	  
+
+}

@@ -1,0 +1,86 @@
+package GUI;
+
+
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.*;
+
+import ManageUsers.UserManagement;
+
+
+public class LoginWindow extends JFrame implements ActionListener {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private int initialWidth = 300;
+	private int initialHeight = 200;
+	private UserManagement UserManager = null;
+	
+	JButton submit; 
+	JPanel panel;
+	JLabel label1,label2,label3;
+	JTextField  userName,password;
+	String roles[] = {"System Administer","Electoral Oficial","Returning Officer","Reporter"};
+	JComboBox roleSlection;
+	public LoginWindow(UserManagement UM) {
+		//Initial the frame.
+		UserManager = UM;
+		this.setSize(initialWidth, initialHeight);
+		this.setResizable(false);
+		this.setTitle("Login");
+		
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		label1 = new JLabel();
+		label1.setText("Username:");
+		userName = new JTextField(15);
+		
+		label2 = new JLabel();
+		label2.setText("Password:");
+		password = new JPasswordField(15);
+		
+		label3 = new JLabel();
+		label3.setText("SlectRole:");
+		roleSlection = new JComboBox(roles);
+		
+		
+		submit=new JButton("Submit");
+
+		panel=new JPanel();
+		panel.add(label1,BorderLayout.WEST);
+		panel.add(userName,BorderLayout.EAST);
+		panel.add(label2,BorderLayout.WEST);
+		panel.add(password,BorderLayout.EAST);
+		panel.add(label3,BorderLayout.SOUTH);
+		panel.add(roleSlection,BorderLayout.SOUTH);
+		panel.add(submit,BorderLayout.SOUTH);
+		panel.setVisible(true);
+		this.add(panel,BorderLayout.CENTER);
+		
+		//ACTION
+
+		submit.addActionListener(this);
+		this.setVisible(true);
+	}
+	
+	public void actionPerformed (ActionEvent e)
+	{   
+		
+		int role = -1;
+		if ("System Administer".equals((String) roleSlection.getSelectedItem())) role = 0;
+		if ("Electoral Oficial".equals((String) roleSlection.getSelectedItem())) role = 1;
+		if ("Returning Officer".equals((String) roleSlection.getSelectedItem())) role = 2;
+		if ("Reporter".equals((String) roleSlection.getSelectedItem())) role = 3;
+		System.out.println(UserManager.logon(userName.getText(),password.getText(),role));
+		//System.out.println(role);
+		// if user and pass is in user list
+		// then show the next window
+			//if role = 
+		
+	}
+
+}

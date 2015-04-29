@@ -1,0 +1,200 @@
+import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+ 
+public class UserManagement {
+  private Connection connection = null;
+  private Statement statement = null;
+  private ResultSet resultSet = null;
+  public elecUser currUser = null;
+  public int currRole = -1;
+ 
+  /**
+   * UserManagement constructor attempts to establish a connection with the given 
+   * userlist or else throws errors
+   * 
+   * @param UserList
+   * @throws SQLException
+   * @throws ClassNotFoundException
+   */
+  public UserManagement(String UserList) throws SQLException, ClassNotFoundException {
+      Class.forName("org.sqlite.JDBC");
+      boolean ULExists = new File(UserList).exists();
+      connection = DriverManager.getConnection("jdbc:sqlite:UserList.sqlite");
+      statement = connection.createStatement();
+      if ( !ULExists ) {
+    	  System.out.println("Error: User List be found.\n"
+    			  + "UserManager can not be created.\n" +
+    			  "Save UserList database to " + UserList + "and run program again.");
+      }
+  }
+ 
+  /**
+   * Close the userList (when done using it).
+   */
+  public void close() {
+    try {
+      statement.close();
+      connection.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+ 
+  /**
+   * Returns an instantiation of class elecUser with the desired
+   * user login provided user is found in db.
+   */
+  public elecUser getUser(String login) throws SQLException {
+	  String query = "SELECT * FROM users WHERE login = '" + login + "'";
+	  try {
+      resultSet = statement.executeQuery( query );
+    } catch (SQLException e) {
+      e.printStackTrace();
+      throw e;
+    }
+    elecUser use = new elecUser();
+    use.setLogin(resultSet.getString("login"));
+    use.setPass(resultSet.getString("password"));
+    use.setFName(resultSet.getString("f_name"));
+    use.setLName(resultSet.getString("l_name"));
+    use.setBlock(resultSet.getBoolean("blocked"));
+    boolean[] roles = {resultSet.getBoolean("sa"),resultSet.getBoolean("eo"),
+    		resultSet.getBoolean("ro"),resultSet.getBoolean("re")};
+    use.setRole(roles);
+    use.setUse(resultSet.getInt("use"));
+    resultSet = null;
+    return use;
+  }
+ 
+  /**
+   * LogOn method logs on desired
+   */
+  public boolean logon(String login, String pass,int role){
+	  try{
+		  elecUser user = getUser( login );
+		  if(!pass.equals(user.getPass())) return false;
+		  else if (!user.getRole()[role]) return false;
+		  else if (role != 3 || user.getUse() == 0) return false;
+		  else {
+			  doUpdate ("UPDATE users SET use = '" + user.addUse() 
+					  + "'" + "WHERE login = '" + login + "'");
+			  currUser = user;
+			  currRole = role;
+		  }
+		  	
+	  } catch (SQLException e){}
+	  return false;
+  }
+  
+  /**
+   * Logoff FUNCTION
+   */
+  public void logoff(){
+	  try{
+		  doUpdate("UPDATE users SET use = " + currUser.removeUse() 
+				  + "WHERE login = " + currUser.getLogin());
+		  currUser = null;
+		  currRole = -1;
+	  }catch(SQLException e){}
+	  
+  }
+  
+  /**
+   * Updates user list item that has login = parameter login 
+   * with all values stored in the elecUser user values
+   */
+  public boolean updateUser(elecUser user, String login){
+	  try{
+		  String query;
+		  query = "UPDATE users SET " +
+				  "login = '" + user.getLogin() + "', " +
+				  "password = '" + user.getPass() + "', " +
+				  "f_name = '" + user.getFName() + "', " +
+				  "l_name = '" + user.getLName() + "', " +
+				  "blocked = '" + user.getBlock() + "', " +
+				  "sa = '" + user.getRole()[0] + "', " +
+				  "eo = '" + user.getRole()[1] + "', " +
+				  "ro = '" + user.getRole()[2] + "', " +
+				  "re = '" + user.getRole()[3] + "' " +
+				  "WHERE login = '" + login + "'";
+		  doUpdate(query);
+		  return true;
+	  } catch(SQLException e){}
+	  
+	  return false;
+  }
+  
+  /**
+   * Inserts newly created user into USER LIST
+   */
+  public boolean addUser(elecUser user){
+	  try{
+		  String query;
+		  query = "INSERT INTO users(login, f_name, l_name, " +
+		  		  "password, blocked, sa, eo, re, ro, use)" +
+		  		  " VALUES(" +
+				  "'" + user.getLogin() + "', '" +
+				  "'" + user.getFName() + "', " +
+				  "'" + user.getLName() + "', " +
+				  "'" + user.getPass() + "', " +
+				  "'" + user.getBlock() + "', " +
+				  "'" + user.getRole()[0] + "', " +
+				  "'" + user.getRole()[1] + "', " +
+				  "'" + user.getRole()[2] + "', " +
+				  "'" + user.getRole()[3] + "', " +
+				  "'0')";
+		  doUpdate(query);
+		  return true;
+	  } catch(SQLException e){}
+	  
+	  return false;
+  }
+  
+  /**
+   * Method if able the method returns a String array
+   * representation of the user list.
+   * 	first third of array is logins of users
+   * 	2nd third of array is First Names of users
+   * 	3rd third of array is Last Names of users
+   */
+  public String[] getUserList(){
+	  String[] ret = null;
+	  try{
+		  resultSet = statement.executeQuery("SELECT login, l_name, f_name FROM users");
+		  int i = 0;
+		  while(resultSet.next()) {
+			  i++;
+		  }
+		  ret = new String[i*3];
+		  resultSet.beforeFirst();
+		  for(int j = 0;j < i;j++){
+			  ret[j] = resultSet.getString("login");
+			  ret[j+1*i] = resultSet.getString("l_name");
+			  ret[j+2*i] = resultSet.getString("f_name");
+			  resultSet.next();
+		  }
+		  resultSet = null;
+	  } catch(SQLException e){}
+  		return ret;
+  }
+  
+  /**
+   * A method to execute CREATE, DROP, and UPDATE queries.
+   */
+  public void doUpdate( String query ) throws SQLException {
+    try {
+      statement.executeUpdate( query );
+    } catch (SQLException e) {
+      e.printStackTrace();
+      throw e;
+    }
+  }
+}
+
+ 
+
+

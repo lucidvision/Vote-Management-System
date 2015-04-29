@@ -1,0 +1,18 @@
+
+public class riding {
+	private String rideId;
+	private String rideName;
+	private String dateCr;
+	private String map;
+	private int numPolls;
+	private int numSeat;
+	private int numIncum;
+	private int numVotes;
+	private String[] candidates;
+	private String[] incumbets;
+	private String[] customKeys;
+	
+	public class riding(){}
+
+
+}
