@@ -123,11 +123,6 @@ public class RepositoryManagement {
 		   return null;
 	   }
 	   
-	   /**
-	    * 
-	    * @author Charles Ferguson
-	    *
-	    */
 	   public void saveNewRiding(riding ride){
 		   connect();
 		   try{
@@ -162,11 +157,6 @@ public class RepositoryManagement {
 		   }	   		   
 	   }
 	   
-	   /**
-	    * 
-	    * @author Charles Ferguson
-	    *
-	    */
 	   public void updateRiding(riding ride, String oldname){
 		   connect();
 		   try{
@@ -235,9 +225,6 @@ public class RepositoryManagement {
 		   return ridings;
 	   }
 	   
-	   /**
-	    * @author Steve Evans
-	    */
 	   public void commitResults( File resultsfile) throws Exception{
 		   if( resultsfile.exists() ){
 			   try {
@@ -317,9 +304,6 @@ public class RepositoryManagement {
 		   }
 	   }
 	   
-	   /**
-	    * @author Rogene Guinto
-	    */
 	   public File createRidingInforFile( riding ride, File file, boolean central) throws Exception
 	{
     	// create local driver and create the file	
@@ -392,9 +376,6 @@ public class RepositoryManagement {
 	   return null;
 	}
 	
-	   /**
-	    * @author Rogene Guinto
-	    */
 	public void archive(File file) throws Exception{
 		if(file.createNewFile()){
 			File rep = new File(RideRep);
