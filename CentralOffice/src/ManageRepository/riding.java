@@ -1,8 +1,5 @@
 package ManageRepository;
 
-/**
- * @author zach Zhang
- */
 public class riding {
 	private String rideId = "";
 	private String rideName = "";
