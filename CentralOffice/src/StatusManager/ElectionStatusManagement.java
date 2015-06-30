@@ -7,9 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-/**
- * @author Brian Park
- */
 public class ElectionStatusManagement {
 	private int status;
 	private Connection con = null;
