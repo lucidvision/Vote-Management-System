@@ -5,11 +5,6 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 
 import ManageRepository.riding;
-/**
- * 
- * @author Charles Ferguson
- *
- */
 
 @SuppressWarnings("serial")
 public class EnterIncumbent extends  JFrame implements ActionListener {
