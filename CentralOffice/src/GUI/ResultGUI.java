@@ -24,9 +24,7 @@ import javax.swing.SwingConstants;
 import ManageRepository.RepositoryManagement;
 import ManageUsers.UserManagement;
 import ReportGenerator.ReportGenerator;
-/**
- * @author Tomy Tao
- */
+
 @SuppressWarnings("serial")
 public class ResultGUI extends JFrame implements ActionListener{
 	//variables 
