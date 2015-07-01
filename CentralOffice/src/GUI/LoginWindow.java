@@ -7,9 +7,6 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
-/**
- * @author Bruce Yi
- */
 @SuppressWarnings("serial")
 public class LoginWindow extends JFrame implements ActionListener {
 	private int initialWidth = 300;
