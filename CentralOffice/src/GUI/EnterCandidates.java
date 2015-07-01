@@ -5,11 +5,6 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 import ManageRepository.riding;
 
-/**
- * 
- * @author Charles Ferguson
- *
- */
 @SuppressWarnings("serial")
 public class EnterCandidates extends  JFrame implements ActionListener {
 	private int initialWidth = 500;
