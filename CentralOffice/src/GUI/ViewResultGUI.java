@@ -20,9 +20,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import ManageRepository.RepositoryManagement;
 import ManageUsers.UserManagement;
-/**
- * @author Tomy Tao
- */
+
 @SuppressWarnings("serial")
 public class ViewResultGUI extends JFrame implements ActionListener {
 	private int initialWidth = 500;
