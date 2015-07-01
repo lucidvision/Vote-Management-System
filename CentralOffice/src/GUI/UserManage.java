@@ -4,9 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 import ManageUsers.*;
-/**
- * @author Bruce Yi
- */
+
 public class UserManage extends JFrame implements ActionListener{
 	private UserManagement UserManager;
 	private int InitialWidth  = 500;
