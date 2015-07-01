@@ -7,9 +7,6 @@ import javax.swing.*;
 import ManageRepository.RepositoryManagement;
 import ManageUsers.UserManagement;
 
-/**
- * @author Rogene Guinto
- */
 @SuppressWarnings("serial")
 public class elecFiles extends JFrame implements ActionListener {
 	private int initialWidth = 600;
