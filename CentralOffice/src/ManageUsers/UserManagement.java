@@ -107,9 +107,6 @@ public class UserManagement {
   /**
    * deleteUser() delete a given user from the user list.
    */
-  /**
-   * @author Scott Feng
-   */
   public void deleteUser(elecUser user){
 	  String query = "DELETE FROM users WHERE login = '" + user.getLogin() + "'";
 	  try {
@@ -181,9 +178,6 @@ public class UserManagement {
   
   /**
    * Inserts newly created user into USER LIST
-   */
-  /**
-   * @author Scott Feng
    */
   public void addUser(elecUser user){
 	  String query;
