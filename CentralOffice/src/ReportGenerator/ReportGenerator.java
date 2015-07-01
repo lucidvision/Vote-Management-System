@@ -7,9 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-/**
- * @author Tomy Tao
- */
+
 public class ReportGenerator {
 	private Connection con = null;
 	  private Statement stat = null;
