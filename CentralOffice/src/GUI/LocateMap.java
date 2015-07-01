@@ -9,12 +9,6 @@ import ManageRepository.riding;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * 
- * @author Charles Ferguson
- *
- */
-
 public class LocateMap extends JFrame implements ActionListener {
 	
 	private static final long serialVersionUID = 1L;
