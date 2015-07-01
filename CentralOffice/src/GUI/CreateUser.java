@@ -5,9 +5,6 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 import ManageUsers.*;
 
-/**
- * @author Scott Feng
- */
 @SuppressWarnings("serial")
 public class CreateUser extends  JFrame implements ActionListener {
 	private int initialWidth = 500;
