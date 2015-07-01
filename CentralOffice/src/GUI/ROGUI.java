@@ -1,12 +1,4 @@
 package GUI;
-/**
- * 
- */
-
-/**
- * @author Tomy Lu
- *
- */
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
