@@ -20,9 +20,6 @@ import javax.swing.SwingConstants;
 import ManageUsers.UserManagement;
 import StatusManager.ElectionStatusManagement;
 
-/**
- * @author Brian Park
- */
 @SuppressWarnings("serial")
 public class StatusManagementGUI extends JFrame implements ActionListener{
 	private UserManagement UserManager;
